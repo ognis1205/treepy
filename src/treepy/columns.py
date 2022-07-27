@@ -25,6 +25,12 @@ class Connectors(str, Enum):
 Column = Sequence[str]
 
 
+def get_width(column: Column) -> int:
+    if not column:
+        return 0
+    return max(map(len, column), default_value=0)
+
+
 def combine(columns: Sequence[Column], joiners: Tuple[str, ...] = ()) -> Column:
     '''Takes one list of strings or more and joins them line by line with the specified joiners.
 
@@ -35,7 +41,7 @@ def combine(columns: Sequence[Column], joiners: Tuple[str, ...] = ()) -> Column:
     Returns:
         Column: ['a-b-...', ...]
     '''
-    widths = tuple(max(map(len, c), default_value=0) for c in columns)
+    widths = tuple(get_width(c) for c in columns)
     return tuple(
         joiner.join(
             (row or '').center(width)
@@ -63,7 +69,9 @@ def _link(
     l = ' ' if connector == Connectors.LCORNER else '─'
     r = ' ' if connector == Connectors.RCORNER else '─'
     if not (lspace or rspace):
-        width = max(map(len, column), default_value=1) - 1
+        width = get_width(column)
+        if width:
+            width -= 1
         lspace = width // 2
         rspace = width - lspace
     return combine([[

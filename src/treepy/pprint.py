@@ -57,7 +57,7 @@ def _vertical(
     return columns.combine([[name, *children]])
 
 
-def print(node: Node) -> str:
+def print(node: Node, stringify: Callable[[Node], str] = lambda n: str(n)) -> str:
     '''Prints out the tree of a given node.
 
     Args:
@@ -66,7 +66,6 @@ def print(node: Node) -> str:
     Returns:
         str: Resulting human readable representation of a specified tree.
     '''
-    stringify = lambda n: str(n)
     card = lambda n: sum(card(c) for c in n.children) + 1
     def sperate(node: Node) -> Tuple[Sequence[Node], Sequence[Node]]:
         cardinalities = { c: card(c) for c in node.children }

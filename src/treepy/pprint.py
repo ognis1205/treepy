@@ -37,16 +37,16 @@ def _vertical(
     '''Returns the string representing tree structure for a given node.
 
     Args:
-        current (Node): Current node to be processed.
+        node (Node): Current node to be processed.
         stringify (Stringifier): Function to be called when the node is stringify.
         separator (Separator): Function to be called when the children of the current node is separated.
 
     Returns:
         Sequence[str]: Human readable string representation of the node.
     '''
-    l, r = separate(current)
-    formatter = lambda n: repr_tree(n, stringify, separate)
-    lcolumn = columns.left(map(formatter, l)) if l else (),
+    l, r = separate(node)
+    formatter = lambda n: _vertical(n, stringify, separate)
+    lcolumn = columns.left(map(formatter, l)) if l else ()
     rcolumn = columns.right(map(formatter, r)) if r else ()
     children = tuple(
         columns.connect(lcolumn, rcolumn) if l or r else ()
@@ -57,7 +57,7 @@ def _vertical(
     return columns.combine([[name, *children]])
 
 
-def print(node: Node, stringify: Callable[[Node], str] = lambda n: str(n)) -> str:
+def tree(node: Node, stringify: Callable[[Node], str] = lambda n: str(n)) -> str:
     '''Prints out the tree of a given node.
 
     Args:
@@ -67,7 +67,7 @@ def print(node: Node, stringify: Callable[[Node], str] = lambda n: str(n)) -> st
         str: Resulting human readable representation of a specified tree.
     '''
     card = lambda n: sum(card(c) for c in n.children) + 1
-    def sperate(node: Node) -> Tuple[Sequence[Node], Sequence[Node]]:
+    def separate(node: Node) -> Tuple[Sequence[Node], Sequence[Node]]:
         cardinalities = { c: card(c) for c in node.children }
         l = sorted(node.children, key=lambda n: card(n))
         r = []

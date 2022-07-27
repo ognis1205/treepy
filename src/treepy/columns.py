@@ -28,10 +28,11 @@ Column = Sequence[str]
 def get_width(column: Column) -> int:
     if not column:
         return 0
-    return max(map(len, column), default_value=0)
+    return max(map(len, column), default=0)
+#    return len(column[0])
 
 
-def combine(columns: Sequence[Column], joiners: Tuple[str, ...] = ()) -> Column:
+def combine(columns: Sequence[Column], joiners: Sequence[str] = ()) -> Column:
     '''Takes one list of strings or more and joins them line by line with the specified joiners.
 
     Args:
@@ -44,9 +45,9 @@ def combine(columns: Sequence[Column], joiners: Tuple[str, ...] = ()) -> Column:
     widths = tuple(get_width(c) for c in columns)
     return tuple(
         joiner.join(
-            (row or '').center(width)
+            row.center(width)
             for row, width in zip(rows, widths)
-        ) for rows, joiner in zip(zip_longest(*columns, fillvalue=None), chain(joiners, repeat(f'{Connectors.NULL}')))
+        ) for rows, joiner in zip(zip_longest(*columns, fillvalue=''), chain(joiners, repeat(f'{Connectors.NULL}')))
     )
 
 

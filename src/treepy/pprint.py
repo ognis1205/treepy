@@ -16,12 +16,8 @@ class Node(Protocol, Generic[NodeType]):
     '''Represents nodes of trees.
 
     Attributes:
-        name (str): Human readable string describing the node.
-        parent (Optional[NodeType]): Parent node of the instance if it exists.
         children (Sequence[NodeType]): Children nodes of the instance.
     '''
-    name: str
-    parent: Optional[NodeType]
     children: Sequence[NodeType]
 
 
@@ -34,7 +30,7 @@ Stringifier = Callable[[Node], str]
 Separator = Callable[[Node], Tuple[Left, Right]]
 
 
-def repr_tree(
+def _vertical(
         node: Node,
         stringify: Stringifier,
         separate: Separator) -> columns.Column:
@@ -59,3 +55,24 @@ def repr_tree(
     llen, rlen = columns.get_width(lcolumn), columns.get_width(rcolumn)
     name = f"{' ' * (llen - (len(name) // 2))}{name}{' ' * (rlen - (len(name) // 2))}"
     return columns.combine([[name, *children]])
+
+
+def print(node: Node) -> str:
+    '''Prints out the tree of a given node.
+
+    Args:
+        node (Node): Node to be printed
+
+    Returns:
+        str: Resulting human readable representation of a specified tree.
+    '''
+    stringify = lambda n: str(n)
+    card = lambda n: sum(card(c) for c in n.children) + 1
+    def sperate(node: Node) -> Tuple[Sequence[Node], Sequence[Node]]:
+        cardinalities = { c: card(c) for c in node.children }
+        l = sorted(node.children, key=lambda n: card(n))
+        r = []
+        while l and sum(cardinalities[n] for n in r) < sum(cardinalities[n] for n in l):
+            r.append(l.pop())
+        return l, r
+    return '\n'.join(_vertical(node, stringify, separate))

@@ -2,7 +2,7 @@
 
 ### Install
 ```
-pip install treepy
+pip install .
 ```
 
 ### Documentation

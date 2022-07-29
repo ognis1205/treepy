@@ -2,7 +2,7 @@
 
 ### Install
 ```
-pip install pptree
+pip install treepy
 ```
 
 ### Documentation

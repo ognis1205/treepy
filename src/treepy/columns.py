@@ -91,12 +91,9 @@ def link(
     l = ' ' if connector == Connectors.LCORNER else '─'
     r = ' ' if connector == Connectors.RCORNER else '─'
     if not (lspace or rspace):
-        width = get_width(column)
-        if width:
-            width -= 1
-
+        width = max(get_width(column) - 1, 0)
         li, ri = get_substr_indices(column)
-        if li and ri:
+        if li is not None and ri is not None:
             lspace = (li + ri) // 2
             rspace = width - lspace
         else:

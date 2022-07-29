@@ -20,6 +20,9 @@ class Node:
     value: Any
     children: Sequence[NodeType] = field(default_factory=list, compare=False)
 
+    def __str__(self):
+        return f'Node({self.value})'
+
 
 class UserInput:
     def __init__(self, text=None):
@@ -68,6 +71,8 @@ INPUT = dedent('''\
 [3000,1130]
 [1000,1140]
 [1000,1150]
+[1130,1160]
+[1160,1170]
 ''')
 
 
@@ -84,8 +89,8 @@ def main():
             p.children.append(c)
             children.add(edge[1])
         root = memo[next(iter(set(memo.keys()) - children))]
-        print(treepy.format(root, stringify=lambda n: str(n.value)))
-        print(treepy.format(root, stringify=lambda n: str(n.value), horizontal=True))
+        print(treepy.format(root, to_string=lambda n: str(n.value)))
+        print(treepy.format(root, horizontal=True))
 
 
 if __name__ == '__main__':

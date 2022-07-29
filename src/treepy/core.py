@@ -32,21 +32,21 @@ Separator = Callable[[Node], Tuple[Left, Right]]
 
 def v(
         node: Node,
-        stringify: Stringifier,
+        to_string: Stringifier,
         separate: Separator) -> columns.Column:
     '''Returns the string representing tree structure for a given node.
 
     Args:
         node (Node): Current node to be processed.
-        stringify (Stringifier): Function to be called when the node is stringify.
+        to_string (Stringifier): Function to be called when the node is stringify.
         separator (Separator): Function to be called when the children of the current node is separated.
 
     Returns:
         Sequence[str]: Human readable string representation of the node.
     '''
-    name = stringify(node)
+    name = to_string(node)
     l, r = separate(node)
-    formatter = lambda n: v(n, stringify, separate)
+    formatter = lambda n: v(n, to_string, separate)
     lcolumn = columns.left(map(formatter, l)) if l else ()
     rcolumn = columns.right(map(formatter, r)) if r else ()
     children = tuple(
@@ -60,7 +60,7 @@ def v(
 def h(
         node: Node,
         acc: columns.Column,
-        stringify: Stringifier,
+        to_string: Stringifier,
         separate: Separator,
         indent: str = '',
         prev: str = 'topbottom') -> None:
@@ -69,17 +69,17 @@ def h(
     Args:
         node (Node): Current node to be processed.
         acc (Columns): Accumulater of the string representation.
-        stringify (Stringifier): Function to be called when the node is stringify.
+        to_string (Stringifier): Function to be called when the node is stringify.
         separator (Separator): Function to be called when the children of the current node is separated.
     '''
-    name = stringify(node)
+    name = to_string(node)
     up, down = separate(node)
 
     for child in up:
         h(
             child,
             acc,
-            stringify,
+            to_string,
             separate,
             f'{indent}{" " if "top" in prev else "|"}{" " * len(name)}',
             'top' if up.index(child) == 0 else ''
@@ -107,14 +107,14 @@ def h(
         h(
             child,
             acc,
-            stringify,
+            to_string,
             separate,
             f'{indent}{" " if "bottom" in prev else "|"}{" " * len(name)}',
             'bottom' if down.index(child) == len(down) - 1 else ''
         )
 
 
-def format(node: Node, stringify: Stringifier = lambda n: str(n), horizontal=False) -> str:
+def format(node: Node, to_string: Stringifier = lambda n: str(n), horizontal=False) -> str:
     '''Prints out the tree of a given node.
 
     Args:
@@ -133,7 +133,7 @@ def format(node: Node, stringify: Stringifier = lambda n: str(n), horizontal=Fal
         return l, r
     if horizontal:
         columns = []
-        h(node, columns, stringify, separate)
+        h(node, columns, to_string, separate)
         return '\n'.join(columns)
     else:
-        return '\n'.join(v(node, stringify, separate))
+        return '\n'.join(v(node, to_string, separate))

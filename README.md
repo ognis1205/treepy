@@ -8,12 +8,12 @@ pip install treepy
 ### Documentation
 This package provides:
 - a default `Node` protocol
-- a `pprint` function accepting a default `Node` protocol as root
+- a `format` function accepting a default `Node` protocol as root
 
 ### Example using provided `Node` class
 ```python
 import sys
-import treepy.pprint
+import treepy
 from dataclasses import dataclass, field
 from io import StringIO
 from re import split
@@ -99,9 +99,9 @@ def main():
             not_root.add(edge[1])
         root = next(iter(set(memo.keys()) - not_root))
         root = memo[root]
-        tree = treepy.pprint(root, stringify=lambda n: str(n.value))
+        tree = treepy.format(root, stringify=lambda n: str(n.value))
         print(tree)
-        tree = treepy.pprint(root, stringify=lambda n: str(n.value), direction='horizontal')
+        tree = treepy.format(root, stringify=lambda n: str(n.value), direction='horizontal')
         print(tree)
 
 

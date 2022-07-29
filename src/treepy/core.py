@@ -30,7 +30,7 @@ Stringifier = Callable[[Node], str]
 Separator = Callable[[Node], Tuple[Left, Right]]
 
 
-def pprint_vertically(
+def vertical(
         node: Node,
         stringify: Stringifier,
         separate: Separator) -> columns.Column:
@@ -46,7 +46,7 @@ def pprint_vertically(
     '''
     name = stringify(node)
     l, r = separate(node)
-    formatter = lambda n: pprint_vertically(n, stringify, separate)
+    formatter = lambda n: vertical(n, stringify, separate)
     lcolumn = columns.left(map(formatter, l)) if l else ()
     rcolumn = columns.right(map(formatter, r)) if r else ()
     children = tuple(
@@ -57,7 +57,7 @@ def pprint_vertically(
     return columns.combine([[name, *children]])
 
 
-def pprint_horizontally(
+def horizontal(
         node: Node,
         acc: columns.Column,
         stringify: Stringifier,
@@ -76,7 +76,7 @@ def pprint_horizontally(
     up, down = separate(node)
 
     for child in up:
-        pprint_horizontally(
+        horizontal(
             child,
             acc,
             stringify,
@@ -104,7 +104,7 @@ def pprint_horizontally(
     acc.append(f'{indent}{l}{name}{r}')
 
     for child in down:
-        pprint_horizontally(
+        horizontal(
             child,
             acc,
             stringify,
@@ -114,7 +114,7 @@ def pprint_horizontally(
         )
 
 
-def pprint(node: Node, stringify: Stringifier = lambda n: str(n), direction='vertical') -> str:
+def format(node: Node, stringify: Stringifier = lambda n: str(n), direction='vertical') -> str:
     '''Prints out the tree of a given node.
 
     Args:
@@ -132,8 +132,8 @@ def pprint(node: Node, stringify: Stringifier = lambda n: str(n), direction='ver
             r.append(l.pop())
         return l, r
     if direction == 'vertical':
-        return '\n'.join(pprint_vertically(node, stringify, separate))
+        return '\n'.join(vertical(node, stringify, separate))
     else:
         columns = []
-        pprint_horizontally(node, columns, stringify, separate)
+        horizontal(node, columns, stringify, separate)
         return '\n'.join(columns)

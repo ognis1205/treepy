@@ -4,8 +4,9 @@ __version__ = '.'.join(map(str, __version_info__))
 
 VERSION = __version__
 
-from treepy.pprint import pprint
+from treepy.pprint import Node, pprint
 
 __all__ = [
+    'Node',
     'pprint'
 ]

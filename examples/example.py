@@ -46,11 +46,28 @@ class UserInput:
 
 
 INPUT = dedent('''\
-[2000000000000,4000000000000]
-[1000000000000,2000000000000]
-[3000000000000,6000000000000]
-[1000000000000,3000000000000]
-[2000000000000,5000000000000]
+[2000,4000]
+[1000,2000]
+[3000,6000]
+[1000,3000]
+[2000,5000]
+[4000,7000]
+[4000,8000]
+[4000,9000]
+[4000,1100]
+[4000,1200]
+[3000,1300]
+[3000,1400]
+[7000,1500]
+[7000,1600]
+[7000,1700]
+[7000,1800]
+[7000,1900]
+[7000,1110]
+[3000,1120]
+[3000,1130]
+[1000,1140]
+[1000,1150]
 ''')
 
 
@@ -68,7 +85,9 @@ def main():
             not_root.add(edge[1])
         root = next(iter(set(memo.keys()) - not_root))
         root = memo[root]
-        tree = treepy.pprint.tree(root, stringify=lambda n: str(n.value))
+        tree = treepy.pprint(root, stringify=lambda n: str(n.value))
+        print(tree)
+        tree = treepy.pprint(root, stringify=lambda n: str(n.value), direction='horizontal')
         print(tree)
 
 

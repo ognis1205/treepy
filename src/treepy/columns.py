@@ -12,14 +12,14 @@ from typing import (
 
 
 class Connectors(str, Enum):
-    NULL = ' ' * 3
-    EDGE = '─' * 3
-    LCORNER = ' ┌─'
-    RCORNER = '─┐ '
-    LBRANCH = '─┘ '
-    RBRANCH = ' └─'
-    DTSHAPE = '─┬─'
-    UTSHAPE = '─┴─'
+    NULL = ' '
+    EDGE = '─'
+    LCORNER = '┌'
+    RCORNER = '┐'
+    LBRANCH = '┘'
+    RBRANCH = '└'
+    DTSHAPE = '┬'
+    UTSHAPE = '┴'
 
 
 Column = Sequence[str]
@@ -29,7 +29,28 @@ def get_width(column: Column) -> int:
     if not column:
         return 0
     return max(map(len, column), default=0)
-#    return len(column[0])
+
+
+def get_left_index(column: Column) -> Optional[int]:
+    if not column or column[0].isspace():
+        return None
+    spaces = ' \t\n'
+    for i, c in enumerate(column[0]):
+        if not c in spaces:
+            return i
+
+
+def get_right_index(column: Column) -> Optional[int]:
+    if not column or column[0].isspace():
+        return None
+    spaces = ' \t\n'
+    for i, c in enumerate(column[0][::-1]):
+        if not c in spaces:
+            return len(column[0]) - i - 1
+
+
+def get_substr_indices(column: Column) -> Tuple[Optional[int], Optional[int]]:
+    return get_left_index(column), get_right_index(column)
 
 
 def combine(columns: Sequence[Column], joiners: Sequence[str] = ()) -> Column:
@@ -51,7 +72,7 @@ def combine(columns: Sequence[Column], joiners: Sequence[str] = ()) -> Column:
     )
 
 
-def _link(
+def link(
         connector: Connectors,
         column: Column,
         lspace: Optional[int] = None,
@@ -73,15 +94,23 @@ def _link(
         width = get_width(column)
         if width:
             width -= 1
-        lspace = width // 2
-        rspace = width - lspace
+
+        li, ri = get_substr_indices(column)
+        if li and ri:
+            lspace = (li + ri) // 2
+            rspace = width - lspace
+        else:
+#        if width:
+#            width -= 1
+            lspace = width // 2
+            rspace = width - lspace
     return combine([[
         f'{l * lspace}{connector}{r * rspace}',
         *column
     ]])
 
 
-def _branches(columns: Sequence[Column]) -> Column:
+def branches(columns: Sequence[Column]) -> Column:
     '''Draws given columns as junctions.
 
     Args:
@@ -91,7 +120,7 @@ def _branches(columns: Sequence[Column]) -> Column:
         Column: ['─┬─┬─, ...', ' a b ...', ...]
     '''
     return combine(
-        tuple(map(lambda c: _link(Connectors.DTSHAPE, c), columns)),
+        tuple(map(lambda c: link(Connectors.DTSHAPE, c), columns)),
         (f'{Connectors.EDGE}',)
     )
 
@@ -107,7 +136,7 @@ def left(columns: Sequence[Column]) -> Column:
     '''
     head, *tail = columns
     return combine(
-        [_link(Connectors.LCORNER, head), _branches(tail)],
+        [link(Connectors.LCORNER, head), branches(tail)],
         (f'{Connectors.EDGE}',)
     )
 
@@ -123,7 +152,7 @@ def right(columns: Sequence[Column]) -> Column:
     '''
     *head, tail = columns
     return combine(
-        [_branches(head), _link(Connectors.RCORNER, tail)],
+        [branches(head), link(Connectors.RCORNER, tail)],
         (f'{Connectors.EDGE}',)
     )
 

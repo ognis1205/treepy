@@ -100,8 +100,6 @@ def link(
             lspace = (li + ri) // 2
             rspace = width - lspace
         else:
-#        if width:
-#            width -= 1
             lspace = width // 2
             rspace = width - lspace
     return combine([[

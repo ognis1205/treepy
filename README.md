@@ -7,8 +7,8 @@ pip install .
 
 ### Documentation
 This package provides:
-- a default `Node` protocol
-- a `format` function accepting a default `Node` protocol as root
+- a `Node` protocol
+- a `format` function accepting a `Node` protocol as root
 
 ### Example
 ```python

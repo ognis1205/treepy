@@ -30,7 +30,7 @@ Stringifier = Callable[[Node], str]
 Separator = Callable[[Node], Tuple[Left, Right]]
 
 
-def vertical(
+def v(
         node: Node,
         stringify: Stringifier,
         separate: Separator) -> columns.Column:
@@ -46,7 +46,7 @@ def vertical(
     '''
     name = stringify(node)
     l, r = separate(node)
-    formatter = lambda n: vertical(n, stringify, separate)
+    formatter = lambda n: v(n, stringify, separate)
     lcolumn = columns.left(map(formatter, l)) if l else ()
     rcolumn = columns.right(map(formatter, r)) if r else ()
     children = tuple(
@@ -57,7 +57,7 @@ def vertical(
     return columns.combine([[name, *children]])
 
 
-def horizontal(
+def h(
         node: Node,
         acc: columns.Column,
         stringify: Stringifier,
@@ -76,7 +76,7 @@ def horizontal(
     up, down = separate(node)
 
     for child in up:
-        horizontal(
+        h(
             child,
             acc,
             stringify,
@@ -104,7 +104,7 @@ def horizontal(
     acc.append(f'{indent}{l}{name}{r}')
 
     for child in down:
-        horizontal(
+        h(
             child,
             acc,
             stringify,
@@ -114,7 +114,7 @@ def horizontal(
         )
 
 
-def format(node: Node, stringify: Stringifier = lambda n: str(n), direction='vertical') -> str:
+def format(node: Node, stringify: Stringifier = lambda n: str(n), horizontal=False) -> str:
     '''Prints out the tree of a given node.
 
     Args:
@@ -131,9 +131,9 @@ def format(node: Node, stringify: Stringifier = lambda n: str(n), direction='ver
         while l and sum(cardinalities[n] for n in r) < sum(cardinalities[n] for n in l):
             r.append(l.pop())
         return l, r
-    if direction == 'vertical':
-        return '\n'.join(vertical(node, stringify, separate))
-    else:
+    if horizontal:
         columns = []
-        horizontal(node, columns, stringify, separate)
+        h(node, columns, stringify, separate)
         return '\n'.join(columns)
+    else:
+        return '\n'.join(v(node, stringify, separate))

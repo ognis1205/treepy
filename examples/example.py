@@ -85,7 +85,7 @@ def main():
             children.add(edge[1])
         root = memo[next(iter(set(memo.keys()) - children))]
         print(treepy.format(root, stringify=lambda n: str(n.value)))
-        print(treepy.format(root, stringify=lambda n: str(n.value), direction='horizontal'))
+        print(treepy.format(root, stringify=lambda n: str(n.value), horizontal=True))
 
 
 if __name__ == '__main__':

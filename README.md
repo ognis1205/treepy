@@ -10,7 +10,7 @@ This package provides:
 - a default `Node` protocol
 - a `format` function accepting a default `Node` protocol as root
 
-### Example using provided `Node` class
+### Example
 ```python
 import sys
 import treepy

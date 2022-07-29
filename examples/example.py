@@ -74,7 +74,7 @@ INPUT = dedent('''\
 def main():
     with UserInput(INPUT) as user_input:
         memo = dict()
-        not_root = set()
+        children = set()
         while edge := user_input.readline(
                 is_array=True,
                 delimiter=r'\s*,\s*',
@@ -82,13 +82,10 @@ def main():
             p = memo.setdefault(edge[0], Node(edge[0]))
             c = memo.setdefault(edge[1], Node(edge[1]))
             p.children.append(c)
-            not_root.add(edge[1])
-        root = next(iter(set(memo.keys()) - not_root))
-        root = memo[root]
-        tree = treepy.format(root, stringify=lambda n: str(n.value))
-        print(tree)
-        tree = treepy.format(root, stringify=lambda n: str(n.value), direction='horizontal')
-        print(tree)
+            children.add(edge[1])
+        root = memo[next(iter(set(memo.keys()) - children))]
+        print(treepy.format(root, stringify=lambda n: str(n.value)))
+        print(treepy.format(root, stringify=lambda n: str(n.value), direction='horizontal'))
 
 
 if __name__ == '__main__':
